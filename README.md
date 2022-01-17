@@ -49,5 +49,27 @@ $ python ./checkin.py CONFIRMATION_NUMBER FIRST_NAME LAST_NAME
 #### Usage
 
 ```bash
-$ sudo docker run -it pyro2927/southwestcheckin:latest CONFIRMATION_NUMBER FIRST_NAME LAST_NAME
+$ sudo docker run -it kim-nguyenkhn/southwestcheckin:latest CONFIRMATION_NUMBER FIRST_NAME LAST_NAME
+```
+
+### Kim's Notes
+
+From the AWS docs: [Link](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
+
+```shell
+ssh -i /path/my-key-pair.pem my-instance-user-name@my-instance-public-dns-name
+
+# Become root
+sudo su -
+# Become docker
+su docker
+
+# Enter python3
+python3
+
+# Build the docker image
+make docker
+
+# Release the docker image
+make release
 ```
