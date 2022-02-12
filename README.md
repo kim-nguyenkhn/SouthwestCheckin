@@ -46,10 +46,38 @@ $ python ./checkin.py CONFIRMATION_NUMBER FIRST_NAME LAST_NAME
 
 ### Docker
 
-#### Usage
+#### Usage (Kim's Notes
 
 ```bash
-$ sudo docker run -it kim-nguyenkhn/southwestcheckin:latest CONFIRMATION_NUMBER FIRST_NAME LAST_NAME
+# SSH into 
+ssh -i /path/my-key-pair.pem my-instance-user-name@my-instance-public-dns-name
+
+# Become root
+sudo su -
+
+# Runs in detached mode
+docker run -it kim-nguyenkhn/southwestcheckin:latest CONFIRMATION_NUMBER FIRST_NAME LAST_NAME
+
+# List all docker instances
+docker ps -a
+
+# Tail logs
+docker logs --tail 100 DOCKER_CONTAINER_ID
+
+# Clean all exited containers
+docker ps -qaf status=exited | xargs docker rm
+
+# Remove all unused images
+docker images -f dangling=true -q | xargs docker rmi
+```
+
+### Changing the Timezone
+```shell
+# List the machine's time zones
+timedatectl
+
+# Set timezone
+timedatectl set-timezone America/Los_Angeles
 ```
 
 ### Kim's Notes
