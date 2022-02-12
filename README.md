@@ -65,6 +65,15 @@ docker ps -a
 docker logs --tail 100 DOCKER_CONTAINER_ID
 ```
 
+### Changing the Timezone
+```shell
+# List the machine's time zones
+timedatectl
+
+# Set timezone
+timedatectl set-timezone America/Los_Angeles
+```
+
 ### Kim's Notes
 
 From the AWS docs: [Link](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
