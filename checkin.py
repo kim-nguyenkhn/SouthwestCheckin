@@ -22,9 +22,9 @@ from southwest import Reservation, openflights
 from threading import Thread
 import sys
 import time
+import logging
 
 CHECKIN_EARLY_SECONDS = 5
-
 
 def schedule_checkin(flight_time, reservation):
     checkin_time = flight_time - timedelta(days=1)
@@ -36,16 +36,16 @@ def schedule_checkin(flight_time, reservation):
         # pretty print our wait time
         m, s = divmod(delta, 60)
         h, m = divmod(m, 60)
-        print("Too early to check in.  Waiting {} hours, {} minutes, {} seconds".format(trunc(h), trunc(m), s))
+        logging.info("Too early to check in.  Waiting {} hours, {} minutes, {} seconds".format(trunc(h), trunc(m), s))
         try:
             time.sleep(delta)
         except OverflowError:
-            print("System unable to sleep for that long, try checking in closer to your departure date")
+            logging.error("System unable to sleep for that long, try checking in closer to your departure date")
             sys.exit(1)
     data = reservation.checkin()
     for flight in data['flights']:
         for doc in flight['passengers']:
-            print("{} got {}{}!".format(doc['name'], doc['boardingGroup'], doc['boardingPosition']))
+            logging.info("{} got {}{}!".format(doc['name'], doc['boardingGroup'], doc['boardingPosition']))
 
 
 def auto_checkin(reservation_number, first_name, last_name, verbose=False):
@@ -67,7 +67,7 @@ def auto_checkin(reservation_number, first_name, last_name, verbose=False):
         date = airport_tz.localize(datetime.strptime(takeoff, '%Y-%m-%d %H:%M'))
         if date > now:
             # found a flight for checkin!
-            print("Flight information found, departing {} at {}".format(airport, date.strftime('%b %d %I:%M%p')))
+            logging.info("Flight information found, departing {} at {}".format(airport, date.strftime('%b %d %I:%M%p')))
             # Checkin with a thread
             t = Thread(target=schedule_checkin, args=(date, r))
             t.daemon = True
@@ -86,6 +86,11 @@ def auto_checkin(reservation_number, first_name, last_name, verbose=False):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.INFO,
+        format='[%(asctime)s - %(levelname)s] %(message)s',
+        datefmt='%m/%d/%Y %I:%M:%S %p'
+    )
 
     arguments = docopt(__doc__, version='Southwest Checkin 3')
     reservation_number = arguments['CONFIRMATION_NUMBER']
@@ -97,8 +102,8 @@ if __name__ == '__main__':
         now = datetime.now()
         time_of_attempt = now.strftime("%H:%M:%S")
 
-        print("Attempting to check in {} {} at {}. Confirmation: {}\n".format(first_name, last_name, time_of_attempt, reservation_number))
+        logging.info("Attempting to check in {} {} at {}. Confirmation: {}\n".format(first_name, last_name, time_of_attempt, reservation_number))
         auto_checkin(reservation_number, first_name, last_name, verbose)
     except KeyboardInterrupt:
-        print("Ctrl+C detected, canceling checkin")
+        logging.warn("Ctrl+C detected, cancelling checkin")
         sys.exit()
