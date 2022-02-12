@@ -63,6 +63,12 @@ docker ps -a
 
 # Tail logs
 docker logs --tail 100 DOCKER_CONTAINER_ID
+
+# Clean all exited containers
+docker ps -qaf status=exited | xargs docker rm
+
+# Remove all unused images
+docker images -f dangling=true -q | xargs docker rmi
 ```
 
 ### Changing the Timezone
